@@ -191,3 +191,65 @@ npx specmatic examples validate --spec-file openapi.yaml
 ├── src/                         # Express app
 └── .env                         # DATABASE_URL, PORT, JWT_SECRET (create this yourself)
 ```
+
+## 9. Architecture
+
+                Client
+                   │
+                   ▼
+              Express API
+                   │
+               Prisma ORM
+                   │
+             PostgreSQL (Neon)
+
+                   ▲
+                   │
+        Specmatic Contract Tests
+                   │
+            openapi.yaml
+
+                   │
+           GitHub Actions CI
+                   │
+        Deploy to Render (if tests pass)
+
+## 10. CI/CD Workflow
+
+Developer Push
+│
+▼
+GitHub Actions
+
+      │
+
+Install Packages
+
+      │
+
+Prisma Generate
+
+      │
+
+Start API
+
+      │
+
+Wait for Health Check
+
+      │
+
+Run Specmatic Tests
+
+      │
+
+Tests Pass?
+
+┌────┴────┐
+│ │
+Yes No
+│ │
+▼ ▼
+
+Deploy Stop
+to Render
