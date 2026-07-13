@@ -4,4 +4,3 @@
 .env.development.local
 /src/generated/prisma
 /build
-license.txt

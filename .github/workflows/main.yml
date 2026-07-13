@@ -1,0 +1,43 @@
+name: Specmatic CI/CD
+
+on:
+  push:
+    branches:
+    - main
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    env:
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      JWT_SECRET: ${{ secrets.JWT_SECRET }}
+      PORT: 3000
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - uses: actions/setup-node@v4
+      with:
+        node-version: 22
+        cache: npm
+
+    - run: npm install
+
+    - run: npx prisma generate
+
+    - name: Start API
+      run: |
+        npm start &
+
+    - name: Wait for API
+      run: npx wait-on http://localhost:3000/health
+
+    - name: Run Specmatic Tests
+      run: |
+        npx specmatic test openapi.yaml \
+          --testBaseURL=http://localhost:3000/api/v1
+
+    - name: Deploy to Render
+      if: success()
+      run: curl "${{ secrets.RENDER_DEPLOY_HOOK }}"
