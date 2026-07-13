@@ -13,6 +13,7 @@
   "http-response": {
     "status": 403,
     "body": {
+      "success": false,
       "message": "Account disabled. Contact your admin."
     }
   }

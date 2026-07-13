@@ -9,6 +9,22 @@ export const login = async (req, res, next) => {
   try {
     const { email, username, password } = req.body;
 
+    if (email !== undefined && typeof email !== "string") {
+      throw Object.assign(new Error("Email must be a string"), { status: 400 });
+    }
+
+    if (username !== undefined && typeof username !== "string") {
+      throw Object.assign(new Error("Username must be a string"), {
+        status: 400,
+      });
+    }
+
+    if (typeof password !== "string") {
+      throw Object.assign(new Error("Password must be a string"), {
+        status: 400,
+      });
+    }
+
     if (!password || (!email && !username)) {
       throw Object.assign(new Error("Email or username is required"), {
         status: 400,

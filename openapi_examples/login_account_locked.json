@@ -13,6 +13,7 @@
   "http-response": {
     "status": 429,
     "body": {
+      "success": false,
       "message": "Account locked. Try again in 10 minutes."
     }
   }

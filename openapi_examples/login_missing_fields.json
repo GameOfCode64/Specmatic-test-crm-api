@@ -12,6 +12,7 @@
   "http-response": {
     "status": 400,
     "body": {
+      "success": false,
       "message": "Email or username is required"
     }
   }

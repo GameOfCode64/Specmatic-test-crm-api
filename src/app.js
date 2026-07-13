@@ -11,6 +11,12 @@ app.use(express.json());
 
 app.use("/api/v1", routes);
 
+app.get("/health", (req, res) => {
+  res.status(200).json({
+    status: "OK",
+  });
+});
+
 app.get("/", (req, res) => {
   res.json({ status: "All EndPoint are Up 🎯" });
 });

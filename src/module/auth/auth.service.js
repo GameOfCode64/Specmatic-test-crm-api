@@ -8,7 +8,8 @@ import { ROLES, LOGIN_SECURITY } from "./auth.constants.js";
    Accepts email OR username + password.
 ──────────────────────────────────────────────────────────────── */
 export const login = async ({ email, username, password }) => {
-  // Find user by email OR username — whichever was provided
+  // Find user by email OR username — whichever was provide
+
   let user = null;
 
   if (email) {
