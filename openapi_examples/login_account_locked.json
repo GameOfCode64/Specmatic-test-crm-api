@@ -1,0 +1,19 @@
+{
+  "http-request": {
+    "method": "POST",
+    "path": "/auth/login",
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "body": {
+      "email": "ron@gmail.com",
+      "password": "Test@1234"
+    }
+  },
+  "http-response": {
+    "status": 429,
+    "body": {
+      "message": "Account locked. Try again in 10 minutes."
+    }
+  }
+}

@@ -1,6 +1,6 @@
 # Tele CRM Auth API + Specmatic Contract Testing
 
-A Node.js/Express authentication API (login by email or username) backed by PostgreSQL/Prisma, with an OpenAPI contract in `openapi.yaml` wired up to [Specmatic](https://specmatic.io) for contract testing and service virtualization (mocking).
+A Node.js/Express authentication API backed by PostgreSQL/Prisma, with an OpenAPI contract in `openapi.yaml` wired up to [Specmatic](https://specmatic.io) for contract testing and service virtualization (mocking).
 
 ---
 
