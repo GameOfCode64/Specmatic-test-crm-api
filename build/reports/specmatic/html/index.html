@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+
+<head>
+    <meta charset="UTF-8"/>
+    <link rel="icon" type="image/svg+xml" href="assets/favicon.svg"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
+    <title>Specmatic Report</title>
+    <link rel="stylesheet" href="assets/styles.css">
+</head>
+
+<body class="flex flex-col min-h-screen gap-3 p-4 pb-0 font-mono" is-gherkin-report="false">
+    <header class="border-2 shadow-md print:shadow-none">
+        <div class="flex items-center justify-between p-4" id="banner">
+            <img class="w-64 h-14" src="assets/specmatic-logo.svg" alt="Specmatic">
+            <h2 class="text-3xl font-medium font-roboto">Contract Test Results</h2>
+            <div class="w-64 text-right print:hidden">
+                <button class="p-2 duration-100 border-2 active:scale-105 hover:border-blue-500" id="downloadButton">
+                    <img src="assets/download.svg" alt="Download Button" class="size-8">
+                </button>
+            </div>
+        </div>
+        <div id="summary" class="flex items-center justify-between gap-5 p-1 border-2 bg-rejected" data-panel="table">
+            
+            <ol id="results" class="relative flex items-center justify-center flex-1 px-2 print:flex-wrap gap-x-5 *:min-w-44 print:*:min-w-0">
+                <li class="flex items-center justify-center gap-2 cursor-pointer group shadow-md print:shadow-none h-12" data-type="Success">
+                    <img src="assets/check-badge.svg" alt="success" class="size-8">
+                    <p class="group-hover:text-green-500">Success: <span>2</span>
+                        <span class="block max-w-0 group-hover:max-w-full transition-all duration-500 h-0.5 bg-green-500"></span>
+                    </p>
+                </li>
+                <li class="flex items-center justify-center gap-2 cursor-pointer group shadow-md print:shadow-none h-12" data-type="Failed">
+                    <img src="assets/x-circle.svg" alt="failed" class="size-8">
+                    <p class="group-hover:text-red-500">Failed: <span>4</span>
+                        <span class="block max-w-0 group-hover:max-w-full transition-all duration-500 h-0.5 bg-red-500"></span>
+                    </p>
+                </li>
+                <li class="flex items-center justify-center gap-2 cursor-pointer group shadow-md print:shadow-none h-12" data-type="Error">
+                    <img src="assets/exclamation-triangle.svg" alt="errors" class="size-8">
+                    <p class="group-hover:text-red-500">Errors: <span>0</span>
+                        <span class="block max-w-0 group-hover:max-w-full transition-all duration-500 h-0.5 bg-red-500"></span>
+                    </p>
+                </li>
+                 <li class="flex items-center justify-center gap-2 cursor-pointer group shadow-md print:shadow-none h-12 hidden" data-type="Skipped">
+                    <img src="assets/blocked.svg" alt="skipped" class="size-8">
+                    <p class="group-hover:text-yellow-500">Skipped: <span>0</span>
+                        <span class="block max-w-0 group-hover:max-w-full transition-all duration-500 h-0.5 bg-yellow-500"></span>
+                    </p>
+                </li>
+                <li class="flex items-center justify-center gap-2 cursor-pointer group shadow-md print:shadow-none h-12 button-pressed" id="all" data-type="All">
+                    <img src="assets/clipboard-document-list.svg" alt="total-tests" class="size-8">
+                    <p class="group-hover:text-blue-500">Total: <span>6</span>
+                        <span class="block max-w-0 group-hover:max-w-full transition-all duration-500 h-0.5 bg-blue-500"></span>
+                    </p>
+                </li>
+                <!-- <li class="flex items-center justify-center gap-2" id="total-time">
+                    <img src="assets/clock.svg" alt="total-time" class="size-8">
+                    <p>Time: 8400ms</p>
+                </li> -->
+            </ol>
+            <div id="badge" class="relative flex items-center justify-center">
+                <img src="assets/badge.svg" class="size-18 rejected" alt="badge">
+                <img src="assets/mark-rejected.svg" alt="mark" class="absolute inset-0 z-10 mx-auto my-auto size-14">
+            </div>
+        </div>
+        
+    </header>
+    <main class="flex items-start flex-1 overflow-hidden border-t-2 shadow-md group print:shadow-none print:overflow-visible" data-item="table">
+        <table id="reports" class="font-mono transition-transform -translate-x-full group-data-[item=table]:translate-x-0 duration-700 min-w-full" data-filter="All">
+            <thead>
+                <tr class="font-bold">
+                    
+                    <td colspan="2">Path</td>
+                    <td colspan="1">Method</td>
+                    <td colspan="1">Response</td>
+                    <td>Exercised</td>
+                    
+                </tr>
+            </thead>
+            <tbody>
+                <tr data-type="Success" data-color="green" data-result="covered" data-coverage="20">
+                    
+                    <td rowspan="5" data-main="true" colspan="2">
+                        /auth/login
+                    </td>
+                    <td rowspan="5" data-main="true" colspan="1">
+                        POST
+                    </td>
+                    <td colspan="1">
+                        <p>200</p>
+                        <span class="text-xs">application/json</span>
+                    </td>
+                    <td>2</td>
+                    
+                </tr>
+                <tr data-type="Failed" data-color="red" data-result="not implemented" data-coverage="20">
+                    
+                    <td rowspan="5" data-main="false" colspan="2" class="hidden">
+                        /auth/login
+                    </td>
+                    <td rowspan="5" data-main="false" colspan="1" class="hidden">
+                        POST
+                    </td>
+                    <td colspan="1">
+                        <p>400</p>
+                        <span class="text-xs">application/json</span>
+                    </td>
+                    <td>1</td>
+                    
+                </tr>
+                <tr data-type="Failed" data-color="red" data-result="not implemented" data-coverage="20">
+                    
+                    <td rowspan="5" data-main="false" colspan="2" class="hidden">
+                        /auth/login
+                    </td>
+                    <td rowspan="5" data-main="false" colspan="1" class="hidden">
+                        POST
+                    </td>
+                    <td colspan="1">
+                        <p>401</p>
+                        <span class="text-xs">application/json</span>
+                    </td>
+                    <td>1</td>
+                    
+                </tr>
+                <tr data-type="Failed" data-color="red" data-result="not implemented" data-coverage="20">
+                    
+                    <td rowspan="5" data-main="false" colspan="2" class="hidden">
+                        /auth/login
+                    </td>
+                    <td rowspan="5" data-main="false" colspan="1" class="hidden">
+                        POST
+                    </td>
+                    <td colspan="1">
+                        <p>403</p>
+                        <span class="text-xs">application/json</span>
+                    </td>
+                    <td>1</td>
+                    
+                </tr>
+                <tr data-type="Failed" data-color="red" data-result="not implemented" data-coverage="20">
+                    
+                    <td rowspan="5" data-main="false" colspan="2" class="hidden">
+                        /auth/login
+                    </td>
+                    <td rowspan="5" data-main="false" colspan="1" class="hidden">
+                        POST
+                    </td>
+                    <td colspan="1">
+                        <p>429</p>
+                        <span class="text-xs">application/json</span>
+                    </td>
+                    <td>1</td>
+                    
+                </tr>
+            </tbody>
+        </table>
+        <div id="details" class="transition-transform translate-x-full group-data-[item=details]:-translate-x-full duration-700 min-w-full p-2 print:hidden">
+            <div class="flex gap-3 top-2" id="response-details">
+                <button id="go-back" class="px-6 py-2 text-white duration-500 bg-blue-500 rounded-md hover:bg-blue-700 group">
+                    <span class="text-lg">&larr;</span>
+                    <span>Go Back</span>
+                </button>
+                <ul id="response-summary" class="flex items-center justify-between flex-1 px-10 gap-10 px-10 border-2 border-red-300 rounded-md font-roboto">
+                </ul>
+            </div>
+            <ul id="scenarios" class="flex flex-col gap-3 py-2 mt-3">
+            </ul>
+        </div>
+    </main>
+    <footer class="flex items-center justify-between p-2 text-center print:flex-col print:gap-2">
+        <p class="w-96 text-left print:text-center">Generated On: <span class="font-mono">Mon, Jul 13 2026 3:12PM</span></p>
+        <div class="flex items-center gap-2">
+            <span class="whitespace-nowrap">Powered By</span>
+            <img src="assets/specmatic-logo.svg" alt="Specmatic" class="w-48 mb-2">
+            <p class="font-light font-roboto">[v2.46.2]</p>
+        </div>
+        <div class="flex items-center justify-end gap-1 w-96 print:justify-center">
+            <p>Copyright</p>
+            <p class="text-3xl">&copy;</p>
+            <p>All Rights Reserved</p>
+        </div>
+    </footer>
+    <script id="json-data" type="application/json">
+        {"\/auth\/login":{"POST":{"application\/json":{"200":[{"name":"Scenario: POST \/auth\/login -> 200 with the request from the example 'Success'","baseUrl":"http:\/\/localhost:3000\/api\/v1","duration":3251,"testResult":"Success","wip":false,"request":"POST \/api\/v1\/auth\/login\nSpecmatic-Response-Code: 200\nHost: localhost:3000\nAccept-Charset: UTF-8\nAccept: *\/*\nContent-Type: application\/json\n\n{\n    \"email\": \"admin@gmail.com\",\n    \"password\": \"Test@1234\"\n}","requestTime":1783935755877,"response":"200 OK\nX-Powered-By: Express\nAccess-Control-Allow-Origin: *\nContent-Type: application\/json; charset=utf-8\nContent-Length: 347\nETag: W\/\"15b-bqzTbQ4yVvdNJaEQdnVEkE\/tHLE\"\nDate: Mon, 13 Jul 2026 09:42:39 GMT\nConnection: keep-alive\nKeep-Alive: timeout=5\n\n{\n    \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjhiYjA3N2Y1LThhM2ItNGU4ZC1hMmQ5LTFlODQwNDMzZjM1NiIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc4MzkzNTc1OSwiZXhwIjoxNzg0MDIyMTU5fQ.EhgG6foWgZy-e1oZ9xM9FQMxHhfEx3V0N0QN8yqrMxA\",\n    \"user\": {\n        \"id\": \"8bb077f5-8a3b-4e8d-a2d9-1e840433f356\",\n        \"name\": \"Admin\",\n        \"username\": \"admin\",\n        \"email\": \"admin@gmail.com\",\n        \"role\": \"ADMIN\"\n    }\n}","responseTime":1783935759128,"specFileName":"openapi.yaml","details":"Scenario: POST \/auth\/login -> 200 with the request from the example 'Success' has SUCCEEDED","htmlResult":"Success"},{"name":"Scenario: POST \/auth\/login -> 200 with the request from the example 'LoginUsingUsername'","baseUrl":"http:\/\/localhost:3000\/api\/v1","duration":1786,"testResult":"Success","wip":false,"request":"POST \/api\/v1\/auth\/login\nSpecmatic-Response-Code: 200\nHost: localhost:3000\nAccept-Charset: UTF-8\nAccept: *\/*\nContent-Type: application\/json\n\n{\n    \"username\": \"admin\",\n    \"password\": \"Test@1234\"\n}","requestTime":1783935759301,"response":"200 OK\nX-Powered-By: Express\nAccess-Control-Allow-Origin: *\nContent-Type: application\/json; charset=utf-8\nContent-Length: 347\nETag: W\/\"15b-fzTMzL8tOeh2GVQ5ukJK9d0t0kE\"\nDate: Mon, 13 Jul 2026 09:42:41 GMT\nConnection: keep-alive\nKeep-Alive: timeout=5\n\n{\n    \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjhiYjA3N2Y1LThhM2ItNGU4ZC1hMmQ5LTFlODQwNDMzZjM1NiIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc4MzkzNTc2MSwiZXhwIjoxNzg0MDIyMTYxfQ.BvXenH0fCqHZLGI5o2l_QzSgszOOHiJKSeyqeLVgjis\",\n    \"user\": {\n        \"id\": \"8bb077f5-8a3b-4e8d-a2d9-1e840433f356\",\n        \"name\": \"Admin\",\n        \"username\": \"admin\",\n        \"email\": \"admin@gmail.com\",\n        \"role\": \"ADMIN\"\n    }\n}","responseTime":1783935761087,"specFileName":"openapi.yaml","details":"Scenario: POST \/auth\/login -> 200 with the request from the example 'LoginUsingUsername' has SUCCEEDED","htmlResult":"Success"}],"400":[{"name":"Scenario: POST \/auth\/login -> 400 with the request from the example 'MissingFields'","baseUrl":"http:\/\/localhost:3000\/api\/v1","duration":89,"testResult":"Failed","wip":false,"request":"POST \/api\/v1\/auth\/login\nSpecmatic-Response-Code: 400\nHost: localhost:3000\nAccept-Charset: UTF-8\nAccept: *\/*\nContent-Type: application\/json\n\n{\n    \"password\": \"Test@1234\"\n}","requestTime":1783935761101,"response":"500 Internal Server Error\nX-Powered-By: Express\nAccess-Control-Allow-Origin: *\nContent-Type: application\/json; charset=utf-8\nContent-Length: 43\nETag: W\/\"2b-BvGdCGzGw2EPQiLIDiLxCh0L3Ac\"\nDate: Mon, 13 Jul 2026 09:42:41 GMT\nConnection: keep-alive\nKeep-Alive: timeout=5\n\n{\n    \"message\": \"Email or username is required\"\n}","responseTime":1783935761190,"specFileName":"openapi.yaml","details":"Scenario: POST \/auth\/login -> 400 with the request from the example 'MissingFields' has FAILED\nIn scenario \"Login User. Response: Validation Error\"\nAPI: POST \/auth\/login -> 400\n\n  >> RESPONSE.STATUS\n  \n      R0002: HTTP status mismatch\n      Documentation: https:\/\/docs.specmatic.io\/rules#r0002\n      Summary: The HTTP status code does not match the expected status code defined in the specification\n  \n      Specification expected status 400 but response contained status 500","htmlResult":"Failed"}],"401":[{"name":"Scenario: POST \/auth\/login -> 401 with the request from the example 'WrongPassword'","baseUrl":"http:\/\/localhost:3000\/api\/v1","duration":1516,"testResult":"Failed","wip":false,"request":"POST \/api\/v1\/auth\/login\nSpecmatic-Response-Code: 401\nHost: localhost:3000\nAccept-Charset: UTF-8\nAccept: *\/*\nContent-Type: application\/json\n\n{\n    \"email\": \"admin@gmail.com\",\n    \"password\": \"WrongPass1\"\n}","requestTime":1783935761209,"response":"500 Internal Server Error\nX-Powered-By: Express\nAccess-Control-Allow-Origin: *\nContent-Type: application\/json; charset=utf-8\nContent-Length: 33\nETag: W\/\"21-dBEoW0UmTF+EGUMaprEp9\/8zNNA\"\nDate: Mon, 13 Jul 2026 09:42:42 GMT\nConnection: keep-alive\nKeep-Alive: timeout=5\n\n{\n    \"message\": \"Invalid credentials\"\n}","responseTime":1783935762725,"specFileName":"openapi.yaml","details":"Scenario: POST \/auth\/login -> 401 with the request from the example 'WrongPassword' has FAILED\nIn scenario \"Login User. Response: Invalid Credentials\"\nAPI: POST \/auth\/login -> 401\n\n  >> RESPONSE.STATUS\n  \n      R0002: HTTP status mismatch\n      Documentation: https:\/\/docs.specmatic.io\/rules#r0002\n      Summary: The HTTP status code does not match the expected status code defined in the specification\n  \n      Specification expected status 401 but response contained status 500","htmlResult":"Failed"}],"403":[{"name":"Scenario: POST \/auth\/login -> 403 with the request from the example 'Disabled'","baseUrl":"http:\/\/localhost:3000\/api\/v1","duration":145,"testResult":"Failed","wip":false,"request":"POST \/api\/v1\/auth\/login\nSpecmatic-Response-Code: 403\nHost: localhost:3000\nAccept-Charset: UTF-8\nAccept: *\/*\nContent-Type: application\/json\n\n{\n    \"email\": \"jon@gmail.com\",\n    \"password\": \"Test@1234\"\n}","requestTime":1783935762735,"response":"500 Internal Server Error\nX-Powered-By: Express\nAccess-Control-Allow-Origin: *\nContent-Type: application\/json; charset=utf-8\nContent-Length: 51\nETag: W\/\"33-WskYe9TSvheLe5XdWaBA1bUNTas\"\nDate: Mon, 13 Jul 2026 09:42:42 GMT\nConnection: keep-alive\nKeep-Alive: timeout=5\n\n{\n    \"message\": \"Account disabled. Contact your admin.\"\n}","responseTime":1783935762880,"specFileName":"openapi.yaml","details":"Scenario: POST \/auth\/login -> 403 with the request from the example 'Disabled' has FAILED\nIn scenario \"Login User. Response: Account Disabled\"\nAPI: POST \/auth\/login -> 403\n\n  >> RESPONSE.STATUS\n  \n      R0002: HTTP status mismatch\n      Documentation: https:\/\/docs.specmatic.io\/rules#r0002\n      Summary: The HTTP status code does not match the expected status code defined in the specification\n  \n      Specification expected status 403 but response contained status 500","htmlResult":"Failed"}],"429":[{"name":"Scenario: POST \/auth\/login -> 429 with the request from the example 'Locked'","baseUrl":"http:\/\/localhost:3000\/api\/v1","duration":1613,"testResult":"Failed","wip":false,"request":"POST \/api\/v1\/auth\/login\nSpecmatic-Response-Code: 429\nHost: localhost:3000\nAccept-Charset: UTF-8\nAccept: *\/*\nContent-Type: application\/json\n\n{\n    \"email\": \"ron@gmail.com\",\n    \"password\": \"Test@1234\"\n}","requestTime":1783935762887,"response":"200 OK\nX-Powered-By: Express\nAccess-Control-Allow-Origin: *\nContent-Type: application\/json; charset=utf-8\nContent-Length: 348\nETag: W\/\"15c-GESzhWrrE8uj86uuGMku8OKAviU\"\nDate: Mon, 13 Jul 2026 09:42:44 GMT\nConnection: keep-alive\nKeep-Alive: timeout=5\n\n{\n    \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjAyYTBlODIyLTZhYWYtNDQzYS1hNWU0LWE5ZDM4NzllZWJmMiIsInJvbGUiOiJFTVBMT1lFRSIsImlhdCI6MTc4MzkzNTc2NCwiZXhwIjoxNzg0MDIyMTY0fQ.vOu3--rOaA1djki2cQ37LbnpD_hBlOGyNEBY_oI8c14\",\n    \"user\": {\n        \"id\": \"02a0e822-6aaf-443a-a5e4-a9d3879eebf2\",\n        \"name\": \"ron\",\n        \"username\": \"ron\",\n        \"email\": \"ron@gmail.com\",\n        \"role\": \"EMPLOYEE\"\n    }\n}","responseTime":1783935764500,"specFileName":"openapi.yaml","details":"Scenario: POST \/auth\/login -> 429 with the request from the example 'Locked' has FAILED\nIn scenario \"Login User. Response: Account Locked\"\nAPI: POST \/auth\/login -> 429\n\n  >> RESPONSE.STATUS\n  \n      R0002: HTTP status mismatch\n      Documentation: https:\/\/docs.specmatic.io\/rules#r0002\n      Summary: The HTTP status code does not match the expected status code defined in the specification\n  \n      Specification expected status 429 but response contained status 200","htmlResult":"Failed"}]}}}}
+    </script>
+    <script defer type="text/javascript" src="assets/utils.js"></script>
+    <script defer type="text/javascript" src="assets/summaryUpdater.js"></script>
+    <script defer type="text/javascript" src="assets/main.js"></script>
+    <script defer type="text/javascript" src="assets/tableFilter.js"></script>
+</body>
+
+</html>

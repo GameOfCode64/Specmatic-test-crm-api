@@ -1,0 +1,205 @@
+openapi: 3.0.3
+
+info:
+  title: Tele CRM Authentication API
+  version: 1.0.0
+  description: Authentication APIs for Tele CRM
+
+servers:
+- url: http://localhost:3000/api/v1
+
+paths:
+  /auth/login:
+    post:
+      summary: Login User
+      description: Login using email or username with password.
+      operationId: login
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              oneOf:
+              - type: object
+                required:
+                - email
+                - password
+                properties:
+                  email:
+                    type: string
+                    format: email
+                  password:
+                    type: string
+
+              - type: object
+                required:
+                - username
+                - password
+                properties:
+                  username:
+                    type: string
+                  password:
+                    type: string
+
+            examples:
+              Success:
+                value:
+                  email: admin@gmail.com
+                  password: Test@1234
+
+              LoginUsingUsername:
+                value:
+                  username: admin
+                  password: Test@1234
+
+              MissingFields:
+                value:
+                  password: Test@1234
+
+              WrongPassword:
+                value:
+                  email: admin@gmail.com
+                  password: WrongPass1
+
+              Disabled:
+                value:
+                  email: jon@gmail.com
+                  password: Test@1234
+
+              Locked:
+                value:
+                  email: ron@gmail.com
+                  password: Test@1234
+
+      responses:
+        "200":
+          description: Login Successful
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LoginResponse"
+              examples:
+                Success:
+                  value:
+                    token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9
+                    user:
+                      id: 8bb077f5-8a3b-4e8d-a2d9-1e840433f356
+                      name: Admin
+                      username: admin
+                      email: admin@gmail.com
+                      role: ADMIN
+                      teamId: null
+
+                LoginUsingUsername:
+                  value:
+                    token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9
+                    user:
+                      id: 8bb077f5-8a3b-4e8d-a2d9-1e840433f356
+                      name: Admin
+                      username: admin
+                      email: admin@gmail.com
+                      role: ADMIN
+                      teamId: null
+
+        "400":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                MissingFields:
+                  value:
+                    message: Email or username is required
+
+        "401":
+          description: Invalid Credentials
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                WrongPassword:
+                  value:
+                    message: Invalid credentials
+
+        "403":
+          description: Account Disabled
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                Disabled:
+                  value:
+                    message: Account disabled. Contact your admin.
+
+        "429":
+          description: Account Locked
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                Locked:
+                  value:
+                    message: Account locked. Try again in 10 minutes.
+
+components:
+  schemas:
+
+    LoginResponse:
+      type: object
+      required:
+      - token
+      - user
+      properties:
+        token:
+          type: string
+          example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9
+
+        user:
+          $ref: "#/components/schemas/User"
+
+    User:
+      type: object
+      required:
+      - id
+      - name
+      - email
+      - role
+      properties:
+        id:
+          type: string
+          format: uuid
+
+        name:
+          type: string
+
+        username:
+          type: string
+          nullable: true
+
+        email:
+          type: string
+          format: email
+
+        role:
+          type: string
+          enum:
+          - ADMIN
+          - MANAGER
+          - EMPLOYEE
+
+        teamId:
+          type: string
+          nullable: true
+
+    ErrorResponse:
+      type: object
+      required:
+      - message
+      properties:
+        message:
+          type: string
