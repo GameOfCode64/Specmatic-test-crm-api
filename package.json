@@ -21,6 +21,7 @@
     "prisma": "^6.16.2"
   },
   "devDependencies": {
-    "specmatic": "^2.46.2"
+    "specmatic": "^2.46.2",
+    "wait-on": "^9.0.10"
   }
 }
