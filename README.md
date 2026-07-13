@@ -216,40 +216,40 @@ npx specmatic examples validate --spec-file openapi.yaml
 
 ## 10. CI/CD Workflow
 
-Developer Push
-│
-▼
-GitHub Actions
+        Developer Push
+              │
+              ▼
+        GitHub Actions
 
-      │
+              │
 
-Install Packages
+        Install Packages
 
-      │
+              │
 
-Prisma Generate
+        Prisma Generate
 
-      │
+              │
 
-Start API
+        Start API
 
-      │
+              │
 
-Wait for Health Check
+        Wait for Health Check
 
-      │
+              │
 
-Run Specmatic Tests
+        Run Specmatic Tests
 
-      │
+              │
 
-Tests Pass?
+        Tests Pass?
 
-┌────┴────┐
-│ │
-Yes No
-│ │
-▼ ▼
+        ┌────┴────┐
+        │         │
+        Yes        No
+        │          │
+        ▼          ▼
 
-Deploy Stop
-to Render
+        Deploy     Stop
+        to Render
