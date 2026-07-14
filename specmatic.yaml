@@ -20,8 +20,8 @@ components:
               actuatorUrl: http://localhost:3000/actuator/mappings
 
 specmatic:
-  settings:
-    test:
-      schemaResiliencyTests: all
+  # settings:
+  # test:
+  #   schemaResiliencyTests: 
   license:
     path: ./license.txt

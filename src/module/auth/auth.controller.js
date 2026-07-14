@@ -7,10 +7,24 @@ import * as authService from "./auth.service.js";
 ──────────────────────────────────────────────────────────────── */
 export const login = async (req, res, next) => {
   try {
+    if (!req.body || typeof req.body !== "object") {
+      throw Object.assign(new Error("Request body is required"), {
+        status: 400,
+      });
+    }
+
     const { email, username, password } = req.body;
 
+    if (!email && !username) {
+      throw Object.assign(new Error("Email or username is required"), {
+        status: 400,
+      });
+    }
+
     if (email !== undefined && typeof email !== "string") {
-      throw Object.assign(new Error("Email must be a string"), { status: 400 });
+      throw Object.assign(new Error("Email must be a string"), {
+        status: 400,
+      });
     }
 
     if (username !== undefined && typeof username !== "string") {
@@ -25,10 +39,11 @@ export const login = async (req, res, next) => {
       });
     }
 
-    if (!password || (!email && !username)) {
-      throw Object.assign(new Error("Email or username is required"), {
-        status: 400,
-      });
+    if (password.length < 8 || password.length > 128) {
+      throw Object.assign(
+        new Error("Password must be between 8 and 128 characters"),
+        { status: 400 },
+      );
     }
 
     const result = await authService.login({ email, username, password });
@@ -46,7 +61,7 @@ export const login = async (req, res, next) => {
 export const createUser = async (req, res, next) => {
   try {
     const creator = req.user; // { id, role } set by authMiddleware
-    const newUser = await authService.createUser(creator, req.body);
+    const newUser = await authService.createUser(creator, req.body || {});
     res.status(201).json(newUser);
   } catch (err) {
     next(err);

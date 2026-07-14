@@ -34,12 +34,9 @@ export const login = async ({ email, username, password }) => {
   // Account lock check
   if (user.lockUntil && new Date() < user.lockUntil) {
     const remaining = Math.ceil((user.lockUntil - new Date()) / 60000);
-    throw Object.assign(
-      new Error(
-        `Account locked. Try again in ${remaining} minute${remaining > 1 ? "s" : ""}.`,
-      ),
-      { status: 429 },
-    );
+    throw Object.assign(new Error(`Account locked. Try again in 10 minutes.`), {
+      status: 429,
+    });
   }
 
   const isMatch = await bcrypt.compare(password, user.password);

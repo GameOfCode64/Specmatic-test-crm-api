@@ -29,8 +29,12 @@ paths:
                   email:
                     type: string
                     format: email
+                    minLength: 5
+                    maxLength: 254
                   password:
                     type: string
+                    minLength: 8
+                    maxLength: 128
 
               - type: object
                 required:
@@ -39,8 +43,13 @@ paths:
                 properties:
                   username:
                     type: string
+                    minLength: 3
+                    maxLength: 50
+                    pattern: "^[a-zA-Z0-9_.-]+$"
                   password:
                     type: string
+                    minLength: 8
+                    maxLength: 128
 
             examples:
               Success:
@@ -82,7 +91,7 @@ paths:
               examples:
                 Success:
                   value:
-                    token: (string)
+                    token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjhiYjA3N2Y1LThhM2ItNGU4ZC1hMmQ5LTFlODQwNDMzZjM1NiIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc4Mzk1NDQzMywiZXhwIjoxNzg0MDQwODMzfQ.IvoB1Bpd4soJrzoirlXWoxM6Sgr8gbVCw5wZo1zap6E
                     user:
                       id: 8bb077f5-8a3b-4e8d-a2d9-1e840433f356
                       name: Admin
@@ -92,7 +101,7 @@ paths:
 
                 LoginUsingUsername:
                   value:
-                    token: (string)
+                    token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjhiYjA3N2Y1LThhM2ItNGU4ZC1hMmQ5LTFlODQwNDMzZjM1NiIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc4Mzk1NDQzMywiZXhwIjoxNzg0MDQwODMzfQ.IvoB1Bpd4soJrzoirlXWoxM6Sgr8gbVCw5wZo1zap6E
                     user:
                       id: 8bb077f5-8a3b-4e8d-a2d9-1e840433f356
                       name: Admin
