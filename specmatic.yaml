@@ -2,23 +2,26 @@ version: 3
 
 systemUnderTest:
   service:
-    definitions:
-    - definition:
-        source:
-          filesystem:
-            directory: .
-        specs:
-        - openapi.yaml
+    $ref: "#/components/services/teleCrmAuth"
 
-    runOptions:
-      openapi:
-        type: test
-        baseUrl: http://localhost:3000/api/v1
+components:
+  services:
+    teleCrmAuth:
+      description: Tele CRM Auth Service
+      definitions:
+      - definition:
+          source:
+            filesystem:
+              directory: .
+          specs:
+          - spec:
+              id: teleCrmAuthSpec
+              path: ./openapi.yaml
+              actuatorUrl: http://localhost:3000/actuator/mappings
 
 specmatic:
   settings:
     test:
       schemaResiliencyTests: all
-
   license:
     path: ./license.txt

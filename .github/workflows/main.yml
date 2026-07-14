@@ -27,16 +27,22 @@ jobs:
     - run: npx prisma generate
 
     - name: Start API
-      run: |
-        npm start &
+      run: npm start &
 
     - name: Wait for API
-      run: npx wait-on http://localhost:3000/health
+      run: npx wait-on http://localhost:3000/actuator/mappings
 
     - name: Run Specmatic Tests
-      run: |
-        npx specmatic test openapi.yaml \
-          --testBaseURL=http://localhost:3000/api/v1
+      run: >
+        npx specmatic test openapi.yaml --testBaseURL=http://localhost:3000/api/v1 --junitReportDir=./build/reports/specmatic
+
+    - name: Upload Specmatic report
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: specmatic-report
+        path: build/reports/specmatic
+        retention-days: 30
 
     - name: Deploy to Render
       if: success()
