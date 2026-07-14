@@ -1,7 +1,6 @@
 import dotenv from "dotenv";
 dotenv.config();
 
-// Breaking pipeline intentionally...
 import app from "./app.js";
 
 const PORT = process.env.PORT || 5000;
