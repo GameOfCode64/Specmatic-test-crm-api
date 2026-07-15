@@ -1,0 +1,25 @@
+{
+  "http-request": {
+    "path": "/auth/login",
+    "method": "POST",
+    "headers": {
+      "Content-Type": "application/json",
+      "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjhiYjA3N2Y1LThhM2ItNGU4ZC1hMmQ5LTFlODQwNDMzZjM1NiIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc4NDA5NzYwOSwiZXhwIjoxNzg0MTg0MDA5fQ.-7MdSPieQKQwaOA-HQ_MYMUqyoOjMt0Rvw4qvei5WRU"
+    },
+    "body": {
+      "email": null,
+      "password": "PKSWC"
+    }
+  },
+  "http-response": {
+    "status": 400,
+    "status-text": "Bad Request",
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "body": {
+      "success": false,
+      "message": "Email or username is required"
+    }
+  }
+}

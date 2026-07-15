@@ -3,17 +3,21 @@ openapi: 3.0.3
 info:
   title: Tele CRM Authentication API
   version: 1.0.0
-  description: Authentication APIs for Tele CRM
+  description: Authentication, user management, and profile APIs for Tele CRM
 
 servers:
 - url: http://localhost:3000/api/v1
+
+security:
+- bearerAuth: []
 
 paths:
   /auth/login:
     post:
       summary: Login User
-      description: Login using email or username with password.
+      description: Login using email or username with password. Public endpoint — no auth required.
       operationId: login
+      security: []
 
       requestBody:
         required: true
@@ -29,12 +33,8 @@ paths:
                   email:
                     type: string
                     format: email
-                    minLength: 5
-                    maxLength: 254
                   password:
                     type: string
-                    minLength: 8
-                    maxLength: 128
 
               - type: object
                 required:
@@ -43,13 +43,8 @@ paths:
                 properties:
                   username:
                     type: string
-                    minLength: 3
-                    maxLength: 50
-                    pattern: "^[a-zA-Z0-9_.-]+$"
                   password:
                     type: string
-                    minLength: 8
-                    maxLength: 128
 
             examples:
               Success:
@@ -61,26 +56,6 @@ paths:
                 value:
                   username: admin
                   password: Test@1234
-
-              MissingFields:
-                value:
-                  password: Test@1234
-
-              WrongPassword:
-                value:
-                  email: admin@gmail.com
-                  password: WrongPass1
-
-              Disabled:
-                value:
-                  email: jon@gmail.com
-                  password: Test@1234
-
-              Locked:
-                value:
-                  email: ron@gmail.com
-                  password: Test@1234
-
       responses:
         "200":
           description: Login Successful
@@ -91,7 +66,7 @@ paths:
               examples:
                 Success:
                   value:
-                    token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjhiYjA3N2Y1LThhM2ItNGU4ZC1hMmQ5LTFlODQwNDMzZjM1NiIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc4Mzk1NDQzMywiZXhwIjoxNzg0MDQwODMzfQ.IvoB1Bpd4soJrzoirlXWoxM6Sgr8gbVCw5wZo1zap6E
+                    token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9
                     user:
                       id: 8bb077f5-8a3b-4e8d-a2d9-1e840433f356
                       name: Admin
@@ -101,50 +76,177 @@ paths:
 
                 LoginUsingUsername:
                   value:
-                    token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjhiYjA3N2Y1LThhM2ItNGU4ZC1hMmQ5LTFlODQwNDMzZjM1NiIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc4Mzk1NDQzMywiZXhwIjoxNzg0MDQwODMzfQ.IvoB1Bpd4soJrzoirlXWoxM6Sgr8gbVCw5wZo1zap6E
+                    token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9
                     user:
                       id: 8bb077f5-8a3b-4e8d-a2d9-1e840433f356
                       name: Admin
                       username: admin
                       email: admin@gmail.com
                       role: ADMIN
-
         "400":
-          description: Validation Error
+          description: Bad Request / Validation Failure
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ErrorResponse"
-              examples:
-                MissingFields:
-                  value:
-                    success: false
-                    message: Email or username is required
+                type: object
+                required:
+                - success
+                - message
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: "Request body is required"
 
-        "401":
-          description: Invalid Credentials
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-              examples:
-                WrongPassword:
-                  value:
-                    success: false
-                    message: Invalid credentials
+  /user/create:
+    post:
+      summary: Create User
+      description: |
+        Creates a new user. Requires a bearer token belonging to an ADMIN or MANAGER.
+        A MANAGER may only create EMPLOYEE accounts; an ADMIN may create any role.
+      operationId: createUser
+      security:
+      - bearerAuth: []
 
-        "403":
-          description: Account Disabled
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateUserRequest"
+            examples:
+              CreateEmployeeByManager:
+                value:
+                  name: Jane Doe
+                  email: jane@gmail.com
+                  username: janedoe
+                  password: Test@1234
+                  role: EMPLOYEE
+
+              CreateManagerByAdmin:
+                value:
+                  name: John Smith
+                  email: john.smith@gmail.com
+                  username: johnsmith
+                  password: Test@1234
+                  role: MANAGER
+
+              InvalidRole:
+                value:
+                  name: Bad Role
+                  email: badrole@gmail.com
+                  password: Test@1234
+                  role: SUPERADMIN
+
+              ManagerForbidden:
+                value:
+                  name: Not Allowed
+                  email: notallowed@gmail.com
+                  password: Test@1234
+                  role: MANAGER
+
+              EmailConflict:
+                value:
+                  name: Duplicate Email
+                  email: admin@gmail.com
+                  password: Test@1234
+                  role: EMPLOYEE
+
+              UsernameConflict:
+                value:
+                  name: Duplicate Username
+                  email: unique@gmail.com
+                  username: admin
+                  password: Test@1234
+                  role: EMPLOYEE
+
+      responses:
+        "201":
+          description: User Created
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ErrorResponse"
+                type: object
+                required:
+                - user
+                properties:
+                  user:
+                    $ref: "#/components/schemas/CreatedUser"
               examples:
-                Disabled:
+                CreateEmployeeByManager:
                   value:
-                    success: false
-                    message: Account disabled. Contact your admin.
+                    user:
+                      id: 2f3c9a10-1b4e-4a7d-9c3e-6a2b8f0e1d55
+                      name: Jane Doe
+                      username: janedoe
+                      email: jane@gmail.com
+                      role: EMPLOYEE
+                      createdAt: "2026-07-15T09:30:00.000Z"
+
+                CreateManagerByAdmin:
+                  value:
+                    user:
+                      id: 7a1e5c22-9f3b-4d6a-8e2c-1b9d4f7a6c30
+                      name: John Smith
+                      username: johnsmith
+                      email: john.smith@gmail.com
+                      role: MANAGER
+                      createdAt: "2026-07-15T09:31:00.000Z"
+        "400":
+          description: Bad Request / Input Validation Failure
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - success
+                - message
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: "Name is required and must be a string"
+  /profile/me:
+    get:
+      summary: Get Current User Profile
+      description: Returns the profile of the currently authenticated user.
+      operationId: getMyProfile
+      security:
+      - bearerAuth: []
+
+      responses:
+        "200":
+          description: Current user profile
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - user
+                properties:
+                  user:
+                    $ref: "#/components/schemas/User"
+              examples:
+                Success:
+                  value:
+                    user:
+                      id: 8bb077f5-8a3b-4e8d-a2d9-1e840433f356
+                      name: Admin
+                      username: admin
+                      email: admin@gmail.com
+                      role: ADMIN
+                      isActive: true
 components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
   schemas:
 
     LoginResponse:
@@ -155,8 +257,7 @@ components:
       properties:
         token:
           type: string
-          example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjhiYjA3N2Y1LThhM2ItNGU4ZC1hMmQ5LTFlODQwNDMzZjM1NiIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc4Mzk1NDQzMywiZXhwIjoxNzg0MDQwODMzfQ.IvoB1Bpd4soJrzoirlXWoxM6Sgr8gbVCw5wZo1zap6E
-
+          example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9
         user:
           $ref: "#/components/schemas/User"
 
@@ -171,18 +272,41 @@ components:
         id:
           type: string
           format: uuid
-
         name:
           type: string
-
         username:
           type: string
           nullable: true
-
         email:
           type: string
           format: email
+        role:
+          type: string
+          enum:
+          - ADMIN
+          - MANAGER
+          - EMPLOYEE
+        isActive:
+          type: boolean
 
+    CreateUserRequest:
+      type: object
+      required:
+      - name
+      - email
+      - password
+      - role
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+          format: email
+        username:
+          type: string
+          nullable: true
+        password:
+          type: string
         role:
           type: string
           enum:
@@ -190,19 +314,40 @@ components:
           - MANAGER
           - EMPLOYEE
 
-        teamId:
+    CreatedUser:
+      type: object
+      required:
+      - id
+      - name
+      - email
+      - role
+      - createdAt
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        username:
           type: string
           nullable: true
+        email:
+          type: string
+          format: email
+        role:
+          type: string
+          enum:
+          - ADMIN
+          - MANAGER
+          - EMPLOYEE
+        createdAt:
+          type: string
+          format: date-time
 
     ErrorResponse:
       type: object
       required:
-      - success
       - message
       properties:
-        success:
-          type: boolean
-          enum:
-          - false
         message:
           type: string

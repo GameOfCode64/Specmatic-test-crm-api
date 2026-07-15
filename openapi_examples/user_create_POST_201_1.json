@@ -1,0 +1,34 @@
+{
+  "http-request": {
+    "path": "/user/create",
+    "method": "POST",
+    "headers": {
+      "Content-Type": "application/json",
+      "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjhiYjA3N2Y1LThhM2ItNGU4ZC1hMmQ5LTFlODQwNDMzZjM1NiIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc4NDA5NzYwOSwiZXhwIjoxNzg0MTg0MDA5fQ.-7MdSPieQKQwaOA-HQ_MYMUqyoOjMt0Rvw4qvei5WRU"
+    },
+    "body": {
+      "name": "Dr. Dave Hermann",
+      "email": "jerry.runte@yahoo.com",
+      "username": "orval.rolfson",
+      "password": "2606m9e59v51",
+      "role": "ADMIN"
+    }
+  },
+  "http-response": {
+    "status": 201,
+    "status-text": "Created",
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "body": {
+      "user": {
+        "id": "a52f66a0-0f55-4b7e-852f-35bba592cf4e",
+        "name": "Dr. Dave Hermann",
+        "username": "orval.rolfson",
+        "email": "jerry.runte@yahoo.com",
+        "role": "ADMIN",
+        "createdAt": "2026-07-15T19:11:17.000Z"
+      }
+    }
+  }
+}

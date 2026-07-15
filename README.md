@@ -7,6 +7,7 @@ This project demonstrates how Specmatic executable contracts improve API reliabi
 - Contract-first API development using OpenAPI
 - Automatic request/response validation
 - Schema Resiliency Testing
+- API Coverage via the Specmatic actuator endpoint
 - Service Virtualization (Mock Server)
 - GitHub Actions CI Contract Testing
 - Automatic deployment after successful contract verification
@@ -131,7 +132,33 @@ If you want to see only the example-driven positive tests without this extra lay
 
 ---
 
-## 6. Run the Specmatic mock server (service virtualization)
+## 6. Enabling API coverage via the actuator endpoint
+
+Contract tests on their own only confirm that the endpoints you've written examples for behave correctly — they don't tell you whether your app has endpoints that are missing from the spec, or spec entries that were never actually implemented. To close that gap, this project exposes an actuator-style endpoint:
+
+```
+GET /actuator/mappings
+```
+
+This returns every route registered in the Express app. When the API is running with this endpoint reachable, Specmatic uses it to cross-check the implementation against `openapi.yaml` and generate an **API coverage report**, which highlights:
+
+- Contract-covered APIs — implemented and matching the spec
+- Missing implementations — declared in the spec but not built yet
+- Endpoints without contract definitions — built but not documented in the spec
+
+Run the same test command as before, with the app up and the actuator endpoint reachable:
+
+```bash
+npx specmatic test --testBaseURL=http://localhost:3000/api/v1 openapi.yaml
+```
+
+The coverage report is generated alongside the test results at `build/reports/specmatic/` — open `index.html` in a browser to see the breakdown.
+
+**[📸 SCREENSHOT — API coverage report goes here]**
+
+---
+
+## 7. Run the Specmatic mock server (service virtualization)
 
 This spins up a fake version of `/auth/login` straight from `openapi.yaml` — useful for frontend/AI-agent development without the real backend or database running at all.
 
@@ -163,7 +190,7 @@ curl -X POST -H "Content-Type: application/json" \
 
 ---
 
-## 7. Examples: inline vs. external
+## 8. Examples: inline vs. external
 
 - **Inline examples** live directly inside `openapi.yaml`, under each `requestBody`/`response` block (`Success`, `LoginUsingUsername`, `MissingFields`, `WrongPassword`, `Disabled`, `Locked`). Specmatic pairs a request example to a response example of the same name to build a test/mock case.
 - **External examples** live as standalone JSON files in `openapi_examples/` (the directory name follows Specmatic's `{spec-file-name}_examples` convention). This repo includes two:
@@ -180,24 +207,26 @@ npx specmatic examples validate --spec-file openapi.yaml
 
 ---
 
-## 8. Project structure
+## 9. Project structure
 
 ```
 .
 ├── openapi.yaml                # the executable contract
 ├── openapi_examples/            # external (out-of-spec) examples
 ├── specmatic.yaml               # Specmatic config (spec location + resiliency settings)
+├── build/reports/specmatic/     # generated test results + API coverage report (gitignored)
+├── .github/workflows/           # CI pipeline: contract tests + conditional deploy
 ├── prisma/schema.prisma         # DB schema
-├── src/                         # Express app
+├── src/                         # Express app (includes GET /actuator/mappings)
 └── .env                         # DATABASE_URL, PORT, JWT_SECRET (create this yourself)
 ```
 
-## 9. Architecture
+## 10. Architecture
 
                 Client
                    │
                    ▼
-              Express API
+              Express API ── GET /actuator/mappings
                    │
                Prisma ORM
                    │
@@ -206,6 +235,7 @@ npx specmatic examples validate --spec-file openapi.yaml
                    ▲
                    │
         Specmatic Contract Tests
+             + API Coverage
                    │
             openapi.yaml
 
@@ -214,42 +244,37 @@ npx specmatic examples validate --spec-file openapi.yaml
                    │
         Deploy to Render (if tests pass)
 
-## 10. CI/CD Workflow
+## 11. CI/CD Workflow
 
-        Developer Push
-              │
-              ▼
-        GitHub Actions
+Every push to `main` triggers a GitHub Actions run that does the following, in order:
 
-              │
+```
+Developer Push
+      │
+      ▼
+GitHub Actions
+      │
+Install Dependencies
+      │
+Generate Prisma Client
+      │
+Start the API
+      │
+Wait for Actuator Endpoint (/actuator/mappings)
+      │
+Run Specmatic Contract Tests
+      │
+Generate JUnit Reports
+      │
+Upload Specmatic Report as GitHub Actions Artifact
+      │
+All Tests Pass?
+   ┌──┴──┐
+  Yes     No
+   │       │
+   ▼       ▼
+ Deploy   Stop
+ to Render
+```
 
-        Install Packages
-
-              │
-
-        Prisma Generate
-
-              │
-
-        Start API
-
-              │
-
-        Wait for Health Check
-
-              │
-
-        Run Specmatic Tests
-
-              │
-
-        Tests Pass?
-
-        ┌────┴────┐
-        │         │
-        Yes        No
-        │          │
-        ▼          ▼
-
-        Deploy     Stop
-        to Render
+<img width="700" height="212" alt="Screenshot 2026-07-14 212302" src="https://github.com/user-attachments/assets/b619664a-dfc5-4fb8-894c-45b4fe262683" />

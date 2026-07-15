@@ -18,10 +18,14 @@ components:
               id: teleCrmAuthSpec
               path: ./openapi.yaml
               actuatorUrl: http://localhost:3000/actuator/mappings
+              securitySchemes:
+                bearerAuth:
+                  type: bearer
+                  token: ${SPECMATIC_BEARER_TOKEN:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjhiYjA3N2Y1LThhM2ItNGU4ZC1hMmQ5LTFlODQwNDMzZjM1NiIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc4NDA5NzYwOSwiZXhwIjoxNzg0MTg0MDA5fQ.-7MdSPieQKQwaOA-HQ_MYMUqyoOjMt0Rvw4qvei5WRU}
 
 specmatic:
-  # settings:
-  # test:
-  #   schemaResiliencyTests: 
+  settings:
+    test:
+      schemaResiliencyTests: all
   license:
     path: ./license.txt

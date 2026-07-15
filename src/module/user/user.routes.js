@@ -1,14 +1,11 @@
 import express from "express";
 
-import { login } from "./auth.controller.js";
 import authMiddleware from "../../middlewares/auth.middleware.js";
 import roleMiddleware from "../../middlewares/role.middleware.js";
+import { createUser } from "./user.controller.js";
 
 const router = express.Router();
 
-/**
- * PUBLIC
- */
-router.post("/login", login);
+router.post("/create", authMiddleware, createUser);
 
 export default router;

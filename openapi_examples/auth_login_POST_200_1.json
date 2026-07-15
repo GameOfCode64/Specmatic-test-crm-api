@@ -1,0 +1,31 @@
+{
+  "http-request": {
+    "path": "/auth/login",
+    "method": "POST",
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "body": {
+      "email": "trista.jaskolski@gmail.com",
+      "password": "y09m5wak"
+    }
+  },
+  "http-response": {
+    "status": 200,
+    "status-text": "OK",
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "body": {
+      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyidI6IjEifQ.MOCKTOKEN",
+      "user": {
+        "id": "d95fceae-9516-4f8e-ac3d-635ed6194acc",
+        "name": "McShayne",
+        "username": "maurine.olson",
+        "email": "britteny.langosh@gmail.com",
+        "role": "ADMIN",
+        "isActive": true
+      }
+    }
+  }
+}

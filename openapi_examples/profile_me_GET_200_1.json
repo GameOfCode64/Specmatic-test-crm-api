@@ -1,0 +1,26 @@
+{
+  "http-request": {
+    "path": "/profile/me",
+    "method": "GET",
+    "headers": {
+      "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjhiYjA3N2Y1LThhM2ItNGU4ZC1hMmQ5LTFlODQwNDMzZjM1NiIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc4NDA5NzYwOSwiZXhwIjoxNzg0MTg0MDA5fQ.-7MdSPieQKQwaOA-HQ_MYMUqyoOjMt0Rvw4qvei5WRU"
+    }
+  },
+  "http-response": {
+    "status": 200,
+    "status-text": "OK",
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "body": {
+      "user": {
+        "id": "01cf803c-fa6e-4fd9-99a5-45b1e8152709",
+        "name": "Fixflex",
+        "username": "aiko.wilkinson",
+        "email": "tyrone.cummerata@hotmail.com",
+        "role": "ADMIN",
+        "isActive": true
+      }
+    }
+  }
+}
