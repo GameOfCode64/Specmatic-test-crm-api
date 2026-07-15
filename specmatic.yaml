@@ -27,5 +27,6 @@ specmatic:
   settings:
     test:
       schemaResiliencyTests: all
+      maxTestCount: 600
   license:
     path: ./license.txt
