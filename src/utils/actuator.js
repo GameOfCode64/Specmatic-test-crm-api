@@ -2,14 +2,9 @@ import express from "express";
 
 const router = express.Router();
 
-/**
- * Walks an Express router's internal layer stack and flattens it into
- * { method, path } pairs, resolving nested routers (e.g. /user -> /user/create)
- * into their full mounted path. Keeps this list accurate automatically as
- * routes are added/removed, instead of hand-maintaining a static one.
- */
 const extractRoutes = (stack, prefix = "") => {
   let routes = [];
+  if (!Array.isArray(stack)) return routes;
 
   stack.forEach((layer) => {
     if (layer.route) {
@@ -20,12 +15,18 @@ const extractRoutes = (stack, prefix = "") => {
       methods.forEach((method) => {
         routes.push({ method: method.toUpperCase(), path: routePath });
       });
-    } else if (layer.name === "router" && layer.handle?.stack) {
+    } else if (
+      (layer.name === "router" ||
+        layer.name === "bound dispatch" ||
+        layer.handle?.stack) &&
+      layer.handle?.stack
+    ) {
+      const rawRegexp = layer.regexp ? layer.regexp.toString() : "";
+
       const mountPath =
         layer.regexp && layer.regexp.fast_slash
           ? ""
-          : layer.regexp
-              .toString()
+          : rawRegexp
               .replace("/^\\", "")
               .replace("\\/?(?=\\/|$)/i", "")
               .replace(/\\\//g, "/")
@@ -40,14 +41,11 @@ const extractRoutes = (stack, prefix = "") => {
   return routes;
 };
 
-/**
- * GET /actuator/mappings
- * Mimics the Spring Boot Actuator mappings response shape that Specmatic
- * expects, so it can cross-reference these routes against openapi.yaml
- * and build the API coverage report.
- */
 router.get("/mappings", (req, res) => {
-  const routes = extractRoutes(req.app._router.stack).filter(
+  const mainRouterStack =
+    req.app?._router?.stack || req.app?.router?.stack || req.app?.stack || [];
+
+  const routes = extractRoutes(mainRouterStack).filter(
     (r) => r.path && !r.path.includes("undefined"),
   );
 

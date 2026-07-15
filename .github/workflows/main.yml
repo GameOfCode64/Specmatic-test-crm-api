@@ -13,10 +13,10 @@ jobs:
       DATABASE_URL: ${{ secrets.DATABASE_URL }}
       JWT_SECRET: ${{ secrets.JWT_SECRET }}
       PORT: 3000
+      NODE_ENV: test
 
     steps:
       - uses: actions/checkout@v4
-
       - uses: actions/setup-node@v4
         with:
           node-version: 22
@@ -26,16 +26,16 @@ jobs:
 
       - run: npx prisma generate
 
-      - name: Start API
-        run: npm start &
+      - name: Start API Backend Instance
+        # 🚀 CRITICAL FIX: Explicitly enforce test environment matching inside the background daemon context
+        run: NODE_ENV=test npm start &
 
       - name: Wait for API
-        run: npx wait-on http://localhost:3000/actuator/mappings
+        run: npx wait-on http://localhost:3000/api/v1/actuator/mappings --timeout 60000
 
       - name: Run Specmatic Tests
         run: |
           npx specmatic test \
-            openapi.yaml \
             --testBaseURL=http://localhost:3000/api/v1 \
             --junitReportDir=./build/reports/specmatic
 
@@ -49,6 +49,12 @@ jobs:
 
       - name: Fail workflow if Specmatic tests failed
         run: |
+          # Ensure target reporting directories exist before executing parsing sweeps
+          if [ ! -d "build/reports/specmatic" ]; then
+            echo "❌ No specmatic test execution reports were generated."
+            exit 1
+          fi
+
           if grep -R 'failures="[1-9]' build/reports/specmatic; then
             echo "❌ Specmatic contract tests failed."
             exit 1
