@@ -14,6 +14,19 @@ This project demonstrates how Specmatic executable contracts improve API reliabi
 
 ---
 
+## Features
+
+- **Contract-First API Development** — the OpenAPI spec is the source of truth, not an afterthought
+- **Automatic Request/Response Validation** via Specmatic
+- **Specmatic Actuator Support** — `GET /actuator/mappings` lets Specmatic discover implemented routes automatically
+- **API Coverage Reports** — see exactly which endpoints are contract-covered, missing, or undocumented
+- **External JSON Test Examples** — request/response pairs live outside the spec file and are auto-discovered by Specmatic
+- **Schema Resiliency Testing** — boundary values, wrong types, and missing fields are tested automatically
+- **Service Virtualization (Mock Server)** — build against a fake backend without the real API or DB running
+- **Automated CI/CD Deployment Gate** — GitHub Actions blocks deployment if any contract test fails
+
+---
+
 ## 1. Prerequisites
 
 | Tool                   | Why you need it                                                    | Check version                        |
@@ -122,11 +135,15 @@ docker run --network=host -v "${PWD}:/usr/src/app" specmatic/specmatic `
 
 > Docker Desktop on Windows/macOS doesn't support `--network=host` the same way as Linux. If the above can't reach `localhost`, replace it with `http://host.docker.internal:3000/api/v1` as the `--testBaseURL` and drop `--network=host`.
 
-Specmatic will run one test per named example — `Success`, `LoginUsingUsername`, `MissingFields`, `WrongPassword`, `Disabled`, `Locked` (inline in the spec) plus the two external examples below — and fail loudly if the live API's status codes or response shapes don't match the contract.
+Specmatic will run one test per named example — `Success`, `LoginUsingUsername`, `MissingFields`, `WrongPassword`, `Disabled`, `Locked` (inline in the spec) plus the external examples in `openapi_examples/` — and fail loudly if the live API's status codes or response shapes don't match the contract.
+
+**[📸 SCREENSHOT — Specmatic Contract Test Report goes here]**
 
 ### Schema resiliency (negative) tests
 
-`specmatic.yaml` has `schemaResiliencyTests: all` enabled, so the same `test` command above _also_ auto-generates and runs boundary/negative-case requests beyond the hand-written examples — e.g. sending a number where a string is expected, `null` for a non-nullable field, wrong enum values for `role`, missing required fields in different combinations, etc. This is what actually stress-tests input validation rather than just the happy paths.
+`specmatic.yaml` has `schemaResiliencyTests: all` enabled, so the same `test` command above _also_ auto-generates and runs boundary/negative-case requests beyond the hand-written examples — e.g. sending a number where a string is expected, `null` for a non-nullable field, wrong enum values for `role`, missing required fields in different combinations, password constraint violations, and other schema-generated edge cases. This is what actually stress-tests input validation rather than just the happy paths.
+
+Backend validation has since been hardened to correctly handle these generated negative cases — fields are now type-checked and validated before use, so malformed input (wrong types, nulls, missing body) returns a clean `4xx` response instead of leaking an unhandled `500`. This closed the gap where schema-resiliency runs were surfacing real, previously-unhandled edge cases in the implementation.
 
 If you want to see only the example-driven positive tests without this extra layer, set `schemaResiliencyTests: false` in `specmatic.yaml` and re-run.
 
@@ -140,7 +157,7 @@ Contract tests on their own only confirm that the endpoints you've written examp
 GET /actuator/mappings
 ```
 
-This returns every route registered in the Express app. When the API is running with this endpoint reachable, Specmatic uses it to cross-check the implementation against `openapi.yaml` and generate an **API coverage report**, which highlights:
+This endpoint is implemented following Specmatic's actuator mapping format (the same shape Spring Boot Actuator uses), returning every route registered in the Express app under `requestMappingConditions.methods` / `.patterns`. Specmatic reads this automatically to discover implemented routes — no manual endpoint list to maintain — and cross-checks them against `openapi.yaml` to generate an **API coverage report**, which highlights:
 
 - Contract-covered APIs — implemented and matching the spec
 - Missing implementations — declared in the spec but not built yet
@@ -199,6 +216,8 @@ curl -X POST -H "Content-Type: application/json" \
 
   Use external examples when a case doesn't belong in the spec file itself, or when you'd rather manage test data outside of the OpenAPI document.
 
+Each external example is structured as a matched request/response pair, following Specmatic's naming convention, so Specmatic can automatically discover and pair them with the correct operation and status code — no manual wiring required. This means they run exactly like inline examples both locally and in CI, with zero extra configuration.
+
 You can validate that all examples (inline and external) are schema-correct without needing a running server or database at all:
 
 ```bash
@@ -212,12 +231,12 @@ npx specmatic examples validate --spec-file openapi.yaml
 ```
 .
 ├── openapi.yaml                # the executable contract
-├── openapi_examples/            # external (out-of-spec) examples
+├── openapi_examples/            # external (out-of-spec) request/response example pairs, auto-discovered by Specmatic
 ├── specmatic.yaml               # Specmatic config (spec location + resiliency settings)
 ├── build/reports/specmatic/     # generated test results + API coverage report (gitignored)
-├── .github/workflows/           # CI pipeline: contract tests + conditional deploy
+├── .github/workflows/           # CI pipeline: contract tests, resiliency tests + conditional deploy
 ├── prisma/schema.prisma         # DB schema
-├── src/                         # Express app (includes GET /actuator/mappings)
+├── src/                         # Express app (includes GET /actuator/mappings, the Specmatic actuator mapping endpoint)
 └── .env                         # DATABASE_URL, PORT, JWT_SECRET (create this yourself)
 ```
 
@@ -254,19 +273,17 @@ Developer Push
       ▼
 GitHub Actions
       │
-Install Dependencies
+Start API
       │
-Generate Prisma Client
+Actuator Discovery
       │
-Start the API
+Contract Tests
       │
-Wait for Actuator Endpoint (/actuator/mappings)
+Schema Resiliency Tests
       │
-Run Specmatic Contract Tests
+API Coverage Report
       │
-Generate JUnit Reports
-      │
-Upload Specmatic Report as GitHub Actions Artifact
+Upload JUnit Artifact
       │
 All Tests Pass?
    ┌──┴──┐
@@ -277,4 +294,16 @@ All Tests Pass?
  to Render
 ```
 
-<img width="700" height="212" alt="Screenshot 2026-07-14 212302" src="https://github.com/user-attachments/assets/b619664a-dfc5-4fb8-894c-45b4fe262683" />
+Contract tests run automatically on every push to `main`, and schema resiliency tests run as part of that same step (`schemaResiliencyTests: all` in `specmatic.yaml`, so no separate command is needed). Specmatic JUnit reports are generated on every run and uploaded as a GitHub Actions artifact, alongside the API coverage report — so you can inspect exactly what failed (or confirm what passed) without re-running anything locally. Deployment to Render only happens if every contract test — including the resiliency-generated ones — passes successfully; a contract-breaking change never reaches production, even one that "looks fine" in a manual test.
+
+## <img width="700" height="212" alt="Screenshot 2026-07-14 212302" src="https://github.com/user-attachments/assets/b619664a-dfc5-4fb8-894c-45b4fe262683" />
+
+## Recent Improvements
+
+- Added the Specmatic actuator endpoint (`GET /actuator/mappings`)
+- Added API Coverage report support
+- Added two new API endpoints
+- Improved backend validation so schema resiliency tests are handled correctly (no more unhandled `500`s on malformed input)
+- Migrated test examples from inline-only to external JSON files under `openapi_examples/`
+- CI now uploads Specmatic JUnit and coverage reports as GitHub Actions artifacts
+- Deployment to Render is now blocked whenever any contract test fails
