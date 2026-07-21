@@ -1,4 +1,4 @@
-# Tele CRM Auth API with Specmatic Contract Testing
+# Tele CRM Auth API with Specmatic Contract Testing!
 
 A production-style authentication API built using Node.js, Express, Prisma and PostgreSQL.
 
